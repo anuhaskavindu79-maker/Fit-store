@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URBAN FIT | Clothing Store</title>
+<meta name="theme-color" content="#111111">
+
+<style>
+*{box-sizing:border-box}
+:root{--black:#111;--gold:#d6b36a;--light:#f5f4f0}
+body{margin:0;font-family:Arial,sans-serif;color:#191919;background:#fff}
+button,input{font:inherit}
+button{cursor:pointer}
+.topbar{background:#111;color:white;text-align:center;padding:9px;font-size:12px}
+header{display:flex;align-items:center;justify-content:space-between;padding:17px 5%;gap:12px}
+.logo{font-size:23px;font-weight:900;letter-spacing:2px}
+.logo span{color:#b58c43}
+.cart-btn{background:#111;color:white;border:0;padding:12px 15px;border-radius:5px}
+.hero{background:linear-gradient(90deg,#161616ed,#16161640),url('https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1400&q=85') center/cover;min-height:360px;display:flex;align-items:center;padding:45px 7%;color:white}
+.hero-content{max-width:470px}
+.hero h1{font-size:clamp(36px,7vw,62px);line-height:1.05;margin:12px 0}
+.hero p{line-height:1.7;color:#eee}
+.eyebrow{letter-spacing:3px;color:var(--gold);font-size:12px;font-weight:bold}
+.primary{background:var(--gold);color:#111;border:0;padding:14px 20px;font-weight:bold;border-radius:4px}
+.section{padding:35px 5%}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.section h2{font-size:26px;margin:0 0 8px}
+.muted{color:#777;font-size:13px}
+.filters{display:flex;gap:9px;flex-wrap:wrap;margin:22px 0}
+.filter{border:1px solid #ddd;background:white;border-radius:25px;padding:10px 15px}
+.filter.active{background:#111;color:white;border-color:#111}
+.search{width:100%;padding:13px;border:1px solid #ddd;border-radius:6px;outline-color:#b58c43}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.product{min-width:0}
+.product img{width:100%;aspect-ratio:3/4;object-fit:cover;background:#eee;border-radius:5px}
+.product h3{font-size:15px;margin:10px 0 5px}
+.price{font-weight:bold;margin:7px 0 12px}
+.add{width:100%;padding:11px;background:#111;color:white;border:0;border-radius:4px}
+.add:active{background:#555}
+.tag{font-size:10px;color:#856526;letter-spacing:1px}
+.empty{text-align:center;padding:30px;color:#777;grid-column:1/-1}
+footer{background:#111;color:white;padding:35px 5%;text-align:center;line-height:1.8}
+footer p{color:#ccc;font-size:13px}
+.overlay{position:fixed;inset:0;background:#0008;z-index:10;display:none}
+.overlay.show{display:block}
+.drawer{position:absolute;right:0;top:0;height:100%;width:min(420px,100%);background:white;padding:20px;overflow:auto}
+.drawer-head{display:flex;justify-content:space-between;align-items:center}
+.close{border:0;background:#eee;border-radius:5px;padding:9px}
+.cart-item{display:flex;gap:12px;padding:15px 0;border-bottom:1px solid #eee}
+.cart-item img{width:75px;height:90px;object-fit:cover}
+.cart-item h4{margin:4px 0 8px;font-size:14px}
+.qty{display:flex;align-items:center;gap:12px;margin-top:10px}
+.qty button{border:1px solid #ddd;background:white;padding:5px 10px}
+.remove{border:0;background:none;color:#b22;font-size:12px;margin-top:7px}
+.total{display:flex;justify-content:space-between;font-size:18px;font-weight:bold;margin:20px 0}
+.checkout{width:100%;padding:15px;background:#188b4b;color:white;border:0;border-radius:5px;font-weight:bold}
+.note{font-size:12px;color:#777;line-height:1.6}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.hero{min-height:320px}.section{padding:28px 4%}header{padding:15px 4%}}
+@media(max-width:360px){.logo{font-size:19px}.cart-btn{padding:10px;font-size:12px}.hero{padding:30px 5%}}
+</style>
+</head>
+<body>
+
+<div class="topbar">NEW SEASON • NEW STYLE • SHOP YOUR LOOK</div>
+
+<header>
+  <div class="logo">URBAN <span>FIT.</span></div>
+  <button class="cart-btn" onclick="openCart()">
+    🛒 CART (<span id="cartCount">0</span>)
+  </button>
+</header>
+
+<section class="hero">
+  <div class="hero-content">
+    <div class="eyebrow">YOUR STYLE. YOUR RULES.</div>
+    <h1>Dress Like<br>You Mean It.</h1>
+    <p>Discover your next favourite look. Fresh styles, everyday comfort.</p>
+    <button class="primary" onclick="document.getElementById('shop').scrollIntoView({behavior:'smooth'})">
+      SHOP COLLECTION →
+    </button>
+  </div>
+</section>
+
+<section class="section" id="shop">
+  <div class="section-title">
+    <div>
+      <h2>Our Collection</h2>
+      <div class="muted">Find your everyday style.</div>
+    </div>
+    <div class="muted" id="resultCount"></div>
+  </div>
+
+  <div class="filters">
+    <button class="filter active" data-category="All">All</button>
+    <button class="filter" data-category="T-Shirts">T-Shirts</button>
+    <button class="filter" data-category="Shirts">Shirts</button>
+    <button class="filter" data-category="Hoodies">Hoodies</button>
+    <button class="filter" data-category="Pants">Pants</button>
+  </div>
+
+  <input class="search" id="search" type="search"
+    placeholder="🔎 Search clothing..." autocomplete="off">
+
+  <div class="grid" id="products"></div>
+</section>
+
+<footer>
+  <div class="logo">URBAN <span>FIT.</span></div>
+  <p>Wear confidence. Wear your style.</p>
+  <p>Contact us through WhatsApp for orders.</p>
+  <small>© <span id="year"></span> Urban Fit. All rights reserved.</small>
+</footer>
+
+<div class="overlay" id="overlay" onclick="outsideClose(event)">
+  <aside class="drawer">
+    <div class="drawer-head">
+      <h2>Your Cart</h2>
+      <button class="close" onclick="closeCart()">✕ Close</button>
+    </div>
+
+    <div id="cartItems"></div>
+    <div class="total">
+      <span>Total</span><span id="total">Rs. 0</span>
+    </div>
+
+    <button class="checkout" onclick="checkout()">
+      ORDER VIA WHATSAPP
+    </button>
+    <p class="note">Your order details will open in WhatsApp.
+      Confirm item availability, delivery charges and payment with the shop.
+    </p>
+  </aside>
+</div>
+
+<script>
+const WHATSAPP_NUMBER = "947XXXXXXXX";
+// Replace with your WhatsApp number:
+// Sri Lanka format, digits only. Example format: 947XXXXXXXX
+
+const products = [
+  {id:1,name:"Classic Black Tee",category:"T-Shirts",price:1500,
+   image:"https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=600&q=80"},
+  {id:2,name:"Essential White Tee",category:"T-Shirts",price:1400,
+   image:"https://images.unsplash.com/photo-1583743814966-8936f37f4678?auto=format&fit=crop&w=600&q=80"},
+  {id:3,name:"Casual Oxford Shirt",category:"Shirts",price:2800,
+   image:"https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=600&q=80"},
+  {id:4,name:"Everyday Hoodie",category:"Hoodies",price:3500,
+   image:"https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=600&q=80"},
+  {id:5,name:"Streetwear Tee",category:"T-Shirts",price:1800,
+   image:"https://images.unsplash.com/photo-1503341504253-dff4815485f1?auto=format&fit=crop&w=600&q=80"},
+  {id:6,name:"Smart Casual Shirt",category:"Shirts",price:3200,
+   image:"https://images.unsplash.com/photo-1603252109303-2751441dd157?auto=format&fit=crop&w=600&q=80"},
+  {id:7,name:"Relaxed Fit Pants",category:"Pants",price:3000,
+   image:"https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=600&q=80"},
+  {id:8,name:"Urban Hoodie",category:"Hoodies",price:3900,
+   image:"https://images.unsplash.com/photo-1578681994506-b8f463449011?auto=format&fit=crop&w=600&q=80"}
+];
+
+let category = "All";
+let cart = {};
+
+try {
+  cart = JSON.parse(localStorage.getItem("urbanfit-cart")) || {};
+} catch (e) {
+  cart = {};
+}
+
+const money = n => "Rs. " + n.toLocaleString("en-LK");
+
+function saveCart() {
+  try {
+    localStorage.setItem("urbanfit-cart", JSON.stringify(cart));
+  } catch (e) {}
+}
+
+function renderProducts() {
+  const q = document.getElementById("search").value.toLowerCase().trim();
+  const list = products.filter(p =>
+    (category === "All" || p.category === category) &&
+    (p.name.toLowerCase().includes(q) ||
+     p.category.toLowerCase().includes(q))
+  );
+
+  document.getElementById("resultCount").textContent =
+    list.length + " products";
+
+  document.getElementById("products").innerHTML = list.length
+    ? list.map(p => `
+      <article class="product">
+        <img src="${p.image}" alt="${p.name}" loading="lazy">
+        <div class="tag">${p.category.toUpperCase()}</div>
+        <h3>${p.name}</h3>
+        <div class="price">${money(p.price)}</div>
+        <button class="add" onclick="addToCart(${p.id})">
+          ADD TO CART +
+        </button>
+      </article>
+    `).join("")
+    : '<div class="empty">No products found. Try another search.</div>';
+}
+
+document.querySelectorAll(".filter").forEach(btn => {
+  btn.addEventListener("click", () => {
+    category = btn.dataset.category;
+    document.querySelectorAll(".filter").forEach(b =>
+      b.classList.toggle("active", b === btn)
+    );
+    renderProducts();
+  });
+});
+
+document.getElementById("search").addEventListener("input", renderProducts);
+
+function addToCart(id) {
+  cart[id] = (cart[id] || 0) + 1;
+  saveCart();
+  renderCart();
+  document.getElementById("cartCount").textContent =
+    Object.values(cart).reduce((a,b) => a+b, 0);
+}
+
+function renderCart() {
+  const entries = products.filter(p => cart[p.id] > 0);
+  document.getElementById("cartCount").textContent =
+    Object.values(cart).reduce((a,b) => a+b, 0);
+
+  document.getElementById("cartItems").innerHTML = entries.length
+    ? entries.map(p => `
+      <div class="cart-item">
+        <img src="${p.image}" alt="">
+        <div>
+          <h4>${p.name}</h4>
+          <div>${money(p.price)}</div>
+          <div class="qty">
+            <button onclick="changeQty(${p.id},-1)">−</button>
+            <span>${cart[p.id]}</span>
+            <button onclick="changeQty(${p.id},1)">+</button>
+          </div>
+          <button class="remove" onclick="removeItem(${p.id})">Remove</button>
+        </div>
+      </div>
+    `).join("")
+    : '<div class="empty">Your cart is empty.</div>';
+
+  const total = entries.reduce((sum,p) => sum + p.price * cart[p.id], 0);
+  document.getElementById("total").textContent = money(total);
+}
+
+function changeQty(id, amount) {
+  cart[id] = (cart[id] || 0) + amount;
+  if (cart[id] <= 0) delete cart[id];
+  saveCart();
+  renderCart();
+}
+
+function removeItem(id) {
+  delete cart[id];
+  saveCart();
+  renderCart();
+}
+
+function openCart() {
+  document.getElementById("overlay").classList.add("show");
+  renderCart();
+}
+
+function closeCart() {
+  document.getElementById("overlay").classList.remove("show");
+}
+
+function outsideClose(event) {
+  if (event.target.id === "overlay") closeCart();
+}
+
+function checkout() {
+  const entries = products.filter(p => cart[p.id] > 0);
+
+  if (!entries.length) {
+    alert("Your cart is empty. Add some products first!");
+    return;
+  }
+
+  if (!/^94\d{9}$/.test(WHATSAPP_NUMBER) ||
+      WHATSAPP_NUMBER.includes("X")) {
+    alert("Please set your shop's WhatsApp number in the code first.");
+    return;
+  }
+
+  let message = "Hello Urban Fit! I want to place an order:\n\n";
+
+  entries.forEach(p => {
+    message += p.name + " x " + cart[p.id] + " = " +
+      money(p.price * cart[p.id]) + "\n";
+  });
+
+  const total = entries.reduce((sum,p) => sum + p.price * cart[p.id], 0);
+  message += "\nTotal: " + money(total);
+  message += "\n\nPlease confirm availability and delivery details.";
+
+  window.open(
+    "https://wa.me/" + WHATSAPP_NUMBER + "?text=" +
+    encodeURIComponent(message),
+    "_blank"
+  );
+}
+
+document.getElementById("year").textContent = new Date().getFullYear();
+
+renderProducts();
+renderCart();
+</script>
+</body>
+</html>
